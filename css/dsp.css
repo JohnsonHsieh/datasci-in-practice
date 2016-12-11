@@ -1,6 +1,6 @@
 .title-slide {
   background-color: #FFFFFF; /* #EDE0CF; ; #CA9F9D*/
-  background-image: url('../img/dsp-front-cover.png'); 
+  background-image: url('../img/dsp-front-cover.jpg'); 
   background-repeat:no-repeat; 
   background-position:center; 
   background-size: 100% 100%;
@@ -12,7 +12,7 @@ slides > slide > hgroup + article {
 
 slides > slide:not(.nobackground) {
   background-color: #FFFFFF; /* #EDE0CF; ; #CA9F9D*/
-  background-image: url("../img/dsp-page.png");
+  background-image: url("../img/dsp-page-white1100.jpg");
   background-repeat:no-repeat; 
   background-position:center; 
   background-size: 100% 100%;
@@ -137,3 +137,4 @@ pre {
   white-space: -o-pre-wrap; /* Opera 7 */
   word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
+

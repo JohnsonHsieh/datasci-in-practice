@@ -1,6 +1,6 @@
 ---
-title: "R在开放数据的加值应用"
-author: "Johnson Ph.D.  (DSP 智库驱动 资料科学家)"
+title: "数据专案在实务上的各种坑"
+author: "Johnson Ph.D.  (DSP 智库驱动 资料科学家) <br> johnson@dsp.im"
 output:
   ioslides_presentation:
     css: css/dsp.css
@@ -30,16 +30,14 @@ sys_encode <- c("utf8", "utf8", "big5")[pmatch(sys_name, c("linux", "darwin", "w
 sessionInfo() %>% capture.output %>% cat(file = "sessionInfo.log", sep = "\n")
 ```
 ### 谢宗震 博士 (Johnson Hsieh)
-- R语言年资 9年
+- R语言年资 10年
 - 新竹清华统计 博士 (2009 - 2013)
-- **DSP智库驱动** 知识长 (dsp.im)
+- **DSP智库驱动** 首席资料科学家 (dsp.im)
+- 行政院青年谘询委员会 委员
 - 台北市公参会**开放资料组** 顾问
-- R package: `iNEXT`, `CARE1`, `JADE`, `SpadeR`, `iNextPD` ...
-
-
-- DataScience HC group 共同创办人
+- D4SG资料英雄计划主持人
 - Taiwan R User group officer
-- Data for social good 共同创办人
+- R package: `iNEXT`, `CARE1`, `JADE`, `SpadeR`, `iNextPD` ...
 
 <br>
 <p>
@@ -48,260 +46,167 @@ sessionInfo() %>% capture.output %>% cat(file = "sessionInfo.log", sep = "\n")
 `r fig("johnson.jpg")`
 <br>
 <font size="2">
-擅长跨与领域专家合作，开发的R包iNEXT被应用于生物、遗传、新闻、文学、电竞等领域。现职为DSP智库驱动知识长，辅导超过300位企业人士成为数据分析人才。
+Johnson 致力于资料科学顾问服务，跨足零售、制造、新闻、电信、家防等领域，现职智库驱动首席资料科学家，辅导政府机关、企业、非营利组织导入资料科学。
 </font>
+
+
+##
+
+Hsieh, T. C., K. H. Ma, and Anne Chao. "`iNEXT`: an R package for rarefaction and extrapolation of species diversity (Hill numbers)." Methods in Ecology and Evolution (2016, cover artilce).
+
+<center>
+`r fig("inext_cover2.png",50)`
+</center>
+<font size="2">
+This cover image shows a beautiful, brilliantly colored fairy pitta (Pitta nympha) perched on a bamboo branch. The migratory fairy pitta breeds in Northeast Asia (Japan, South Korea, east China and Taiwan) from late April to September and winters mainly in Borneo from October to March.
+</font>
+
 
 ## {.vcentered .centered}
 
-<p>
-<br>
-<p style="font-size: 180%"> 参与这场R语言会议的朋友有福了 </p>
+<p style="font-size: 180%">
+这场演讲将讲述我们跟大型企业交手的经验，</p>
 <br>
 <p style="font-size: 180%">
- 这场演讲将分享用R做开放数据分析的真实经验
+分享如何在地雷区完成任务的心得，
 </p>
 <br>
 <p style="font-size: 180%">
-所有案例原始数据、代原码都公开在github </p>
-
+特别适合想要**组队接外包**数据专案的团队，
+</p>
+<br>
+<p style="font-size: 180%">
+还有想启动一个数据科学专案的**企业**。
+</p>
 
 ## Agenda
 
-<ul style="font-size: 120%">
-<li>Real world, data and open data</li>
-<li>Three types of data analysis</li>
-<li>Discussion and case study</li>
+<ul style="font-size: 140%">
+<li>没看到资料前，都是假的！</li>
+<li>没做 EDA 前，都是假的！</li>
+<li>模型的准确度，都是假的！</li>
 </ul>
 
-# About Data
+# 没看到资料前，都是假的！
 
-## About Data {.smaller .centered}
-<img src='img/about-data.jpg' style='height: 400px'></img>
-<h3>Real World, All Data, Big Data, Open Data</h3>
-取自 <http://goo.gl/HS4irZ>
+## 资料的极限 - columns {.vcentered .centered}
+<img src='img/one-and-one.png' style='height: 400px'></img>
+
+> - 一个问题是否能透过资料解决和资料搜集与记录的方式有关。
+
+## 资料的极限 - row {.vcentered .centered}
+<img src='img/galaxy-note-7.png' style='height: 400px'></img>
+
+> - 样本中的稀有事件或是未曾发生的事件难以配适模型。
+
+## 资料的极限 - sample size {.vcentered .centered}
+<img src='img/chisq-test.png' style='width: 80%'></img>
+
+> - 统计显著性会受到样本数不足所影响。
 
 
-## Open Data
-开放数据是一种经过挑选与许可的数据，它不受著作权、专利权，以及其他管理机制所限制，可以开放给社会公众，任何人都可以自由出版使用，不论是要拿来出版或是做其他的运用都不加以限制。
+## 资料的极限 - sample size
+```{r echo=TRUE}
+# R code here
+x <- matrix(c(10, 5, 7, 7), ncol=2)
+chisq.test(x)$p.value
 
-<br>
-<ul style="font-size: 120%">
-<li>资讯对称，沟通透明</li>
-<li>群众外包，共同参与</li>
-<li>练功打怪，自我实现</li>
-<li>结合创新，提升效能</li>
+y <- matrix(c(100, 50, 70, 70), ncol=2)
+chisq.test(y)$p.value
+
+z <- matrix(c(1000, 500, 700, 700), ncol=2)
+chisq.test(z)$p.value
+```
+<center>
+- 统计显著性会受到样本数不足所影响。
+</center>
+
+# 没做 EDA 前，都是假的！
+
+## 资料的品质 - missing value {.vcentered .centered}
+<img src='img/missing.png' style='height: 400px'></img>
+
+> - 即使在资讯系统中事先规划好栏位，还是有可能失败。
+
+## 资料的品质 - error log {.vcentered .centered}
+```{r message=FALSE, warning=FALSE}
+set.seed(123)
+x <- seq(as.Date("2010/1/1"), as.Date("2015/1/1"), "days")
+y <- arima.sim(list(order = c(1,1,0), ar = 0.7), n=length(x)-1)
+y <- y + abs(min(y)) + 10
+y[1000:1400] <- NA
+dat <- data.frame(x, y)
+ggplot(data=dat, aes(x=x,y=y)) +
+  geom_point(size=0.5, col=adjustcolor(1,1)) +
+  labs(x="Date", y="Value") +
+  scale_x_date(date_breaks = "4 month") +
+  geom_point(data=subset(dat, is.na(y)), 
+             aes(x, y=0), col=2, size=0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+        text=element_text(size=18))
+```
+
+> - 当感测器报错时，不一定能够用遗漏值插补来处理。
+
+
+## 资料的品质 - illogic  {.vcentered .centered}
+### A/B医院相互转诊时间差异过大
+<img src='img/a2b-b2a.png' style='height: 360px'></img>
+
+> - 合乎资料系统逻辑，但是与真实经验不合。
+
+## 资料的品质 - unclear  {.vcentered .centered}
+<img src='img/idea-reality.png' style='height: 400px'></img>
+
+> - 预先规划的BI介面，不一定能够正式实行。
+
+## 资料的品质 - summary
+<ul style="font-size: 140%" class="build">
+<li>刚拿到一批资料，**绝对不能**一头栽进去做深入的分析，或是建立机器学习模型。</li>
+<li>合格的数据科学家，要**先做探索性分析 (EDA)** 计算简单统计量与视觉化观察资料。</li>
+<li>这些工具不只能描述资料的特性，更重要的是要检验资料的**干净度**与**正确性**。</li>
+<li> 完成资料品质检验的具体方式就是完成一个**资料仪表板** (Dashboard)</li>
 </ul>
 
-# Three types of data analysis
+## 资料的品质 - dashboard {.vcentered .centered}
 
-## Three types of data analysis
-<h3> 掌握现况 </h3>
-<h3> 洞悉关联 </h3>
-<h3> 预测未知 </h3>
+<img src='img/dashboard.png' style='height: 400px'></img>
 
-# 掌握现况案例
+- **资料仪表板** (dashboard) 是完成资料品质检验的具体成果。
 
-
-## 社区医疗群地图 (gov) {.smaller .centered}
-<img src='img/communitymedcare.png' style='height: 400px'></img>
-<h3>ggmap + rCharts + shiny</h3>
-作者： 李昕迪 医师 (mcdlee)
-
-## 社区医疗群地图 (gov) {.smaller .centered}
-<iframe src="http://mcdlee.github.io/VGHKS/VGHKS.html" width="960" height="400" scrolling="yes" frameborder="0"> 
-</iframe> 
-
-## 社区医疗群地图 (gov)
-- 来源：卫福部中央健保署
-- 作者：李昕迪 医师 (mcdlee)
-- R包：`ggmap` + `rCharts` + `shiny`
-- 参考: [slide](http://mcdlee.github.io/gisVisualization), [shinypp](https://mcdlee.shinyapps.io/communitymedcare), [github repo](https://github.com/mcdlee/communitymedcare)
-
-## NPO城乡多样性比较 (NPO) {.smaller .centered}
-<img src='img/unitedway.png' style='height: 400px'></img>
-<h3>联合劝募基金会</h3>
-https://www.unitedway.org.tw/
-
-## NPO城乡多样性比较 (NPO) {.smaller .centered}
-<img src='img/npo-list.png' style='height: 400px'></img>
-<h3>利用`rvest`爬NPO名录</h3>
-收录1111间NPO，包含16种服务对象(tag)
-
-## NPO城乡多样性比较 (NPO) {.smaller .centered}
-<img src='img/npo-bar.png' style='height: 400px'></img>
-<h3>`dplyr` + `ggplot2`</h3>
-台北 (都市, S=16, n=738)、云嘉 (农业, S=15, n=177)、花东 (偏乡, S=15, n=206)
-
-## NPO城乡多样性比较 (NPO)  {.columns-2}
-- 多样性 (diversity) 与多样性指标
-- 一个区域的多样性越高，表示遇到灾害的容忍程度越高
-- 基本概念：种类越多越好，分布越均匀越好
-- Shannon diversity: $H = \exp{\left ( \sum_{i=1}^{S}-p_i\log{p_i}\right )}$
+## 建立**资料仪表板**的意义  {.vcentered .centered}
 <br>
-<p>
+<p style="font-size: 140%">
+确认资料已经可以**正确**的被取出并**视觉化**呈现，</p>
 <br>
-<img src='img/sampleSites.jpg' style='height: 200px'></img>
-
-
-## NPO城乡多样性比较 (NPO)
-- 多样性指标会受到样本数所影响，样本数越大，能够观察到的种类数也越多，多样性就越大。为求公平，应控制在相同样本数下比较多样性。
-- Shannon diversity: $H(n) = \exp{\left ( \sum_{i=1}^{S}-p_i(n)\log{p_i(n)}\right )}$
+<p style="font-size: 140%">
+让组织中的不同团队**共享资料**，提升全体素养，</p>
 <br>
-```{r eval=FALSE, echo=TRUE}
-install.packages("iNEXT") # 安装 iNEXT package (Hsieh et al. , 2015) 
-library(iNEXT)
-tab <- read.csv("npo-type.csv", row.names = 1)
-# iNEXT 主程式，计算位阶数q = 1的Shannon diversity 稀释/外插估计
-out <- iNEXT(tab, q=1, endpoint=750, se=FALSE)
-# 整合ggplot2绘图风格
-ggiNEXT(out) + 
-  theme_gray(base_family = "STHeiti")
-```
-
-## NPO城乡多样性比较 (NPO) {.smaller .centered}
-<img src='img/npo-inext.png' style='height: 400px'></img>
-<h3>`dplyr` + `ggplot2` + `iNEXT`</h3>
-多样性排序：花东 > 台北 > 云嘉
-
-## NPO城乡多样性比较 (NPO)
-- 来源：联合劝募基金会
-- 作者：谢宗震 博士 (Johnson)
-- R包：`dplyr` + `ggplot` + `iNEXT`
-- 参考:  [shinypp](https://chao.shinyapps.io/iNEXT), [github repo](https://github.com/JohnsonHsieh/iNEXT)
-- 
-
-# 洞悉因素案例
-
-## 找出火灾风险热区 (GOV) {.smaller .centered}
-<img src='img/Final Areas - fire zones.jpg
-' style='height: 400px'></img>
-<h3>纽奥良消防局 +  Nolalytics</h3>
-火灾风险热区 (优先发放烟雾警报器)
-
-## 找出火灾风险热区 (GOV) {.smaller .centered}
-<img src='img/NO-table.png' style='height: 400px'></img>
-<h3>回归分析：找出影响火灾的因子</h3>
-屋龄、居住时间、收入水平、更新、屋主年龄、租/住
-
-## 找出火灾风险热区 (GOV)
-- 来源：纽奥良消防局
-- 作者：Nolalytics (New Orleans Analytics)
-- R包：`reshape` + `plyr` + `dplyr`+ `ROCR` + `maps` + `maptools` + `sp` + `rgdal`
-- Reference: [github repo](https://github.com/cno-opa/smoke-alarm-outreach), [report](http://nola.gov/performance-and-accountability/nolalytics/files/full-report-on-analytics-informed-smoke-alarm-outr/)
-
-# 预测未知案例
-
-##  {.smaller .centered}
-<img src='img/ja_b01.jpg' style='height: 500px'></img>
-
-##  {.smaller .centered}
-<img src='img/news_01.png' style='height: 500px'></img>
-
-## 豪宅房价预测 (GOV)
-- 内政部实价登录资料 (2012年8月 ~ 2013年9月)
-- 顶级豪宅：40 / 21530 件
-- 重要因子：面积、车位、屋龄、行政区、楼层
-- `reshape` + `dplyr` + `mgcv`
-```{r echo=TRUE, message=FALSE, warning=FALSE}
-library(mgcv) #provides functions for generalized additive modelling
-dat1 <- readRDS("data/dat1.rds")
-# fit linear model
-g1 <- lm(log10(總價)~面積+車位+屋齡+行政區+floor, data=dat1)
-# fit addiive model with two smooth terms
-g2 <- gam(log10(總價)~s(面積)+車位+s(屋齡)+行政區+floor, data=dat1)
-# Compare adjusted R-squared, 越趨近1模型配適度越好
-data.frame("linear model"=summary(g1)$adj.r.sq, "additive model"=summary(g2)$r.sq)
-```
-
-## 豪宅房价预测 (GOV) {.smaller .centered}
-<img src='img/predHouse.png' style='height: 500px'></img>
-
-## 豪宅房价预测 (GOV)
-```{r echo=TRUE, eval=FALSE}
-# set dataset, 帝寶格局
-new <- dat1[1:6, c(2,3,4,6,7,12)]
-rownames(new) <- 1:6
-new$面積 <- c(160,160,210,210,260,260)
-new$車位 <- rep("有車位",6); 
-new$屋齡 <- rep(8, 6)
-new$行政區 <- rep("大安區",6)
-new$floor <- rep(c("低樓層","高樓層"),3)
-# prediction
-tmp <- predict(g2, newdata=new, se.fit=TRUE)
-pred <- 10^cbind(tmp$fit, tmp$fit-tmp$se.fit, tmp$fit+tmp$se.fit)
-data.frame("建案坪數"=new$面積, "高低樓層"=new$floor, 
-           "總價估計.萬元"=round(pred[,1]/10000),
-           "單價估計.萬元"=round(pred[,1]/10000/new$面積))
-```
-
-## 豪宅房价预测 (GOV) {.smaller .centered}
-<img src='img/shiny_01.png' style='height: 500px'></img>
-
-## 豪宅房价预测 (GOV){.smaller .centered}
-<img src='img/news_02.png' style='height: 500px'></img>
-
-## 豪宅房价预测 (GOV)
-- 来源：内政部实价登录资料 (2012年8月 ~ 2013年9月)
-- 作者：谢宗震 博士
-- R包：`mgcv`
-- Reference: [github repo](https://github.com/JohnsonHsieh/study-area-statR)
-
-
-
-## NPO总数估计 (NPO){.smaller .centered}
-<img src='img/npo-list2.png' style='height: 400px'></img>
+<p style="font-size: 140%">
+减少资料科学团队产生报表的需求，**减少内耗**，</p>
 <br>
-四种来源：台湾公益资讯中心、善耕365、联合劝募、自律联盟
+<p style="font-size: 140%">
+建立起**信任感**，初步展现资料科学团队的价值。</p>
 
-## NPO总数估计 (NPO){.smaller .centered}
-<img src='img/cmr.png' style='height: 400px'></img>
-<h3>重复捕取方法 (Chao et al. 2015)</h3>
+# 模型的准确度，都是假的！
 
-## NPO总数估计 (NPO)
-```{r echo=TRUE, eval=FALSE}
-install.packages("CARE1") # 样本覆盖率估计法 (Chao et al. 2015)
-library(CARE1)
-npoList <- read.csv("data/npoList.csv", row.names=1)
-record <- as.record(npoList)
-estN.stat(record) 
-# M=观察到的总类别, D=任两来源的平均类别, C=样本覆盖率
-estN(record, method="LSC", se=TRUE)
-# 四个来源共观察到 3528间 NPO，以样本覆盖率法推得 7507间 NPO估计值
-```
-```{r }
-library(CARE1)
-npoList <- read.csv("data/npoList.csv", row.names=1)
-record <- as.record(npoList)
-record
-estN.stat(record) 
-# M=种类别, D=任两来源的平均类别, C=样本覆盖率
-estN(record, method="LSC", se=TRUE)
-```
+## 问对问题最困难 {.vcentered .centered}
+### 数据科学专案流程
+<img src='img/ds-process.png' style='height: 360px'></img>
 
-## NPO总数估计 (NPO)
-- 来源：台湾公益资讯中心、善耕365、联合劝募、自律联盟
-- 作者：DSP资料科学团队
-- R包：`rvest` + `CARE1` + `shiny`
-- 参考: [hackpad](https://dsp.hackpad.com/-NPO-WcWRyZSZFge), [hackathon](http://hack.dsp.im/d4sg-hackathon/https%253A%252F%252Fgoo.gl%252FPFEpD2)
+> - 完成**定义问题**跟**资料盘点**才能讨论**建模**
 
+## 真实问题 -> 科学模型 -> 实质成效
+### 专案规划上最难的是事先要对模型效力做评价
+- 遇到资料极限、资料品质问题，神仙也难救
+- 到底是关注**影响特征**的解释还是**成果预测**的准确？
+    - regression model (linear, non-linear, interaction)
+    - tree-baed model
+- 模型评价还得衔接上实质影响力
+    - 模型配适程度 $R^2$ 要多少才够？准确率应该多高才对？
+    - 模型建议200名潜在顾客，预计成效 xxx,xxx,xxx元
 
-## 博客浏览数预测 (Business)  {.smaller .centered}
-<img src='img/pixnet-data.png' style='height: 500px'></img>
-
-##  数据竞赛平台 {.smaller .centered}
-<img src='img/dc-pixnet.png' style='width: 960px'></img>
-
-
-## 数据竞赛平台  {.smaller .centered}
-<img src='img/dc-overview.png' style='height: 400px'></img>
-<h3>数据竞赛平台</h3>
-政府、企业、非营利组织的数据加值平台
-
-## Summary
-- 社区医疗群地图: https://github.com/mcdlee/communitymedcare
-- NPO城乡多样性比: https://github.com/JohnsonHsieh/iNEXT
-- 找出火灾风险热区: https://github.com/cno-opa/smoke-alarm-outreach
-- 豪宅房价预测: https://github.com/JohnsonHsieh/study-area-statR
-- NPO总数估计: https://dsp.hackpad.com/-NPO-WcWRyZSZFge
-
-# Thank You
+##
+<center>
+`r fig("namecard.png", 80)`
+</center>
